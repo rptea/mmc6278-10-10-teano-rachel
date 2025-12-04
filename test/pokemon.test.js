@@ -4,6 +4,7 @@ const { expect } = require('chai')
 const axios = require('axios')
 const { getPokemon } = require('../util/pokemon')
 const { getPounds, getFeetAndInches } = require('../util/convertUnits')
+const { get } = require('../app')
 
 // Only includes relevant data
 const POKEMON_RESPONSE = {
@@ -58,9 +59,22 @@ describe('pokemon api util', () => {
       const pokemonData = await getPokemon('banana')
       expect(pokemonData.name).to.eq(POKEMON_RESPONSE.name)
     })
-    it('should return pokemon official artwork sprite')
-    it('should return pokemon height in feet and inches')
-    it('should return pokemon weight in pounds')
+    it('should return pokemon official artwork sprite', async () => {
+      const pokemonData = await getPokemon('banana')
+      const expectedSprite = POKEMON_RESPONSE.sprites.other['official-artwork'].front_default
+      expect(pokemonData.sprite).to.eq(expectedSprite)
+    })
+    it('should return pokemon height in feet and inches', async () => {
+      const pokemonData = await getPokemon('banana')
+      const expectedHeight = getFeetAndInches(POKEMON_RESPONSE.height)
+      expect(pokemonData.height).to.eq(expectedHeight)
+    })
+    it('should return pokemon weight in pounds', async () => {
+      const pokemonData = await getPokemon('banana')
+      const expectedWeight = getPounds(POKEMON_RESPONSE.weight)
+      expect(pokemonData.weight).to.eq(expectedWeight)
+    })
+    })
     it('should throw error if axios errors', async () => {
       axiosStub.restore()
       sinon.stub(axios, 'get').throws(new Error('oh no'))
@@ -73,4 +87,3 @@ describe('pokemon api util', () => {
       }
     })
   })
-})
